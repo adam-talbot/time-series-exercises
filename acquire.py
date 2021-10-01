@@ -7,16 +7,15 @@ def build_df(base_url, entry):
     Takes in base url and entry of json you are interested in and creates df for all pages
     '''
     response = requests.get(base_url + '/api/v1/' + entry)
-    df_data = response.json()['payload']
-    df = pd.DataFrame(response.json()['payload'][entry])
+    n = response.json()['payload']['max_page']
+    pages = []
     
-    for page in range(2, df_data['max_page'] + 1):
-        response = requests.get(base_url + df_data['next_page'])
-        df_payload = response.json()['payload']
-        new_df = pd.DataFrame(df_payload[entry])
-        df = pd.concat([df, new_df], ignore_index=True)
-        # print(page)
+    for page in range(1, n+1):
+        response = requests.get(base_url + '/api/v1/' + entry + '?page=' + str(page))
+        pages += response.json()['payload'][entry]
         
+    df = pd.DataFrame(pages)
+
     return df
 
 def get_data(base_url, entry):
@@ -45,8 +44,8 @@ def combined_df():
     items = get_data(base_url='https://python.zgulde.net', entry='items')
     stores = get_data(base_url='https://python.zgulde.net', entry='stores')
     sales = get_data(base_url='https://python.zgulde.net', entry='sales')
-    combined = sales.merge(items, how='inner', left_on='item', right_on='item_id')
-    combined = combined.merge(stores, how='inner', left_on='store', right_on='store_id')
+    combined = sales.merge(items, how='left', left_on='item', right_on='item_id')
+    combined = combined.merge(stores, how='left', left_on='store', right_on='store_id')
     return combined
 
 def get_power():

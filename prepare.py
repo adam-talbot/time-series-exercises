@@ -9,7 +9,7 @@ def clean_sales_data():
     '''
     df = a.combined_df() # call acquire function to get all data from API
     df = df.drop(columns=['item', 'store']) # drop redundant columns
-    df.sale_date = pd.to_datetime(df.sale_date) # convert data column into datetime dtype
+    df.sale_date = pd.to_datetime(df.sale_date.apply(lambda x: x[:-13])) # convert data column into datetime dtype removing unneeded data
     df = df.set_index('sale_date') # set data column as index
     df['month'] = df.index.month_name() # add month name column
     df['day_of_week'] = df.index.day_name() # add day name column

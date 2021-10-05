@@ -22,7 +22,7 @@ def get_clean_sales_data():
     '''
     if os.path.isfile('clean_sales_data.csv'):
         # If csv file exists, read in data from csv file.
-        df = pd.read_csv('clean_sales_data.csv', index_col=0)
+        df = pd.read_csv('clean_sales_data.csv', index_col=0, parse_dates=True)
     else:
         # Read fresh data from db into a DataFrame and clean
         df = clean_sales_data()
